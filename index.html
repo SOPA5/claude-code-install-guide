@@ -12,7 +12,8 @@
 <meta property="og:title" content="Claude Code 설치 가이드 — 윈도우에서 따라만 하면 끝" />
 <meta property="og:description" content="터미널이 뭔지 몰라도 괜찮아요. 새 가전제품 설명서 보듯, 한 단계씩 따라오면 끝나요." />
 <meta property="og:locale" content="ko_KR" />
-<meta property="og:image" content="og-image.png" />
+<meta property="og:url" content="https://claude-code-install-guide-black.vercel.app/" />
+<meta property="og:image" content="https://claude-code-install-guide-black.vercel.app/og-image.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="author" content="Claude Code 설치집" />
 
@@ -645,7 +646,7 @@ table.compare .cell-emo{margin-right:7px}
   border-radius:13px;padding:18px 20px;
   transition:border-color .25s,box-shadow .25s,transform .25s var(--ease);
 }
-.check-item:hover{border-color:#dcc9a4;box-shadow:var(--shadow-s);transform:translatex(3px)}
+.check-item:hover{border-color:#dcc9a4;box-shadow:var(--shadow-s);transform:translateX(3px)}
 .check-box{
   width:26px;height:26px;border-radius:8px;flex-shrink:0;
   border:2px solid var(--line);background:var(--paper);
@@ -819,7 +820,7 @@ table.compare .cell-emo{margin-right:7px}
 .trouble-body{padding:23px 26px}
 .symptom{
   font-family:var(--font-mono);font-size:12.5px;line-height:1.7;
-  background:rgba(239,68,68,.07);
+  background:rgba(210,72,58,.07);
   border-left:3px solid var(--error);border-radius:0 8px 8px 0;
   padding:11px 15px;color:#9a4135;margin-bottom:15px;
   word-break:break-all;
@@ -1149,7 +1150,7 @@ table.compare .cell-emo{margin-right:7px}
       </p>
     </div>
     <div class="path-pick">
-      <div class="path-card" data-pick="terminal" tabindex="0" role="button" aria-label="터미널 전역설치 선택">
+      <div class="path-card" data-pick="terminal" tabindex="0" role="button" aria-pressed="false" aria-label="터미널 전역설치 선택">
         <span class="path-tier power">파워 유저 추천</span>
         <h3>① 터미널 전역설치</h3>
         <p class="pa">명령어 한 줄로 직접 설치</p>
@@ -1160,7 +1161,7 @@ table.compare .cell-emo{margin-right:7px}
           <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#6f8159" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Node.js 없이 명령 한 줄로 설치</li>
         </ul>
       </div>
-      <div class="path-card sel" data-pick="vscode" tabindex="0" role="button" aria-label="VS Code 확장 선택">
+      <div class="path-card sel" data-pick="vscode" tabindex="0" role="button" aria-pressed="true" aria-label="VS Code 확장 선택">
         <span class="path-tier easy">처음이라면 추천</span>
         <h3>② VS Code 확장 프로그램</h3>
         <p class="pa">버튼 클릭만으로 설치</p>
@@ -1185,9 +1186,9 @@ table.compare .cell-emo{margin-right:7px}
         <span class="section-tag">04 · 따라하기</span>
         <h2 class="section-title">자, 한 단계씩<br />같이 가볼까요</h2>
       </div>
-      <div class="path-switch reveal d1" role="tablist">
-        <button data-tab="terminal">① 터미널 전역설치</button>
-        <button data-tab="vscode" class="on">② VS Code 확장</button>
+      <div class="path-switch reveal d1">
+        <button data-tab="terminal" aria-pressed="false">① 터미널 전역설치</button>
+        <button data-tab="vscode" class="on" aria-pressed="true">② VS Code 확장</button>
       </div>
     </div>
 
@@ -1937,8 +1938,16 @@ table.compare .cell-emo{margin-right:7px}
   var pickCards = document.querySelectorAll(".path-card");
   function selectPath(name){
     panels.forEach(function(p){ p.classList.toggle("show", p.getAttribute("data-panel")===name); });
-    tabs.forEach(function(t){ t.classList.toggle("on", t.getAttribute("data-tab")===name); });
-    pickCards.forEach(function(c){ c.classList.toggle("sel", c.getAttribute("data-pick")===name); });
+    tabs.forEach(function(t){
+      var on = t.getAttribute("data-tab")===name;
+      t.classList.toggle("on", on);
+      t.setAttribute("aria-pressed", on?"true":"false");
+    });
+    pickCards.forEach(function(c){
+      var on = c.getAttribute("data-pick")===name;
+      c.classList.toggle("sel", on);
+      c.setAttribute("aria-pressed", on?"true":"false");
+    });
   }
   tabs.forEach(function(t){
     t.addEventListener("click", function(){ selectPath(t.getAttribute("data-tab")); });
