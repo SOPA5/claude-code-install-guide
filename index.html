@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Claude Code 설치 가이드 — 윈도우에서 따라만 하면 끝</title>
+<meta name="description" content="터미널이 뭔지 몰라도 괜찮아요. 윈도우에서 Claude Code를 설치하는 두 가지 방법을, 새 가전제품 설명서 보듯 한 단계씩 안내하는 비개발자용 가이드." />
+<meta name="theme-color" content="#f6efe1" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Claude Code 설치 가이드 — 윈도우에서 따라만 하면 끝" />
+<meta property="og:description" content="터미널이 뭔지 몰라도 괜찮아요. 새 가전제품 설명서 보듯, 한 단계씩 따라오면 끝나요." />
+<meta property="og:locale" content="ko_KR" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+
+<style>
+/* ============================================================
+   Claude Code 설치 가이드 — 따뜻한 종이 / 코랄 에디토리얼
+   ============================================================ */
+
+:root{
+  --paper:#f6efe1;
+  --paper-2:#efe5d2;
+  --card:#fffefb;
+  --ink:#2e2a23;
+  --ink-2:#6a6052;
+  --ink-3:#9b9080;
+  --coral:#d4694a;
+  --coral-2:#b94e2f;
+  --sage:#6f8159;
+  --gold:#c08a3c;
+  --line:#e6dcc6;
+  --line-soft:#efe7d6;
+  --code-bg:#322d26;
+  --code-ink:#f3ead7;
+  --code-line:#4a443a;
+
+  --font-head:'Gowun Batang', serif;
+  --font-body:'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono:'JetBrains Mono', ui-monospace, monospace;
+
+  --shadow-s:0 2px 8px rgba(60,48,30,.06);
+  --shadow-m:0 10px 30px -12px rgba(60,48,30,.18);
+  --shadow-l:0 26px 60px -20px rgba(60,48,30,.28);
+
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --maxw:1140px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+body{
+  font-family:var(--font-body);
+  background:var(--paper);
+  color:var(--ink);
+  font-size:17px;
+  line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  letter-spacing:-.01em;
+}
+
+/* 종이 질감 노이즈 오버레이 */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  pointer-events:none;
+  opacity:.45;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply;
+}
+
+a{color:inherit;text-decoration:none}
+img{max-width:100%}
+::selection{background:var(--coral);color:#fff}
+
+/* 스크롤바 */
+::-webkit-scrollbar{width:11px}
+::-webkit-scrollbar-track{background:var(--paper-2)}
+::-webkit-scrollbar-thumb{background:#d8c9a8;border-radius:8px;border:3px solid var(--paper-2)}
+
+/* ---------- 레이아웃 헬퍼 ---------- */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+.section{padding:110px 0;position:relative}
+.section-tag{
+  display:inline-flex;align-items:center;gap:9px;
+  font-size:13px;font-weight:700;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--coral-2);
+  margin-bottom:20px;
+}
+.section-tag::before{
+  content:"";width:30px;height:2px;background:var(--coral);display:inline-block;
+}
+.section-title{
+  font-family:var(--font-head);font-weight:700;
+  font-size:clamp(1.95rem,4vw,3rem);
+  line-height:1.28;letter-spacing:-.02em;
+  margin-bottom:18px;
+}
+.section-lead{
+  font-size:clamp(1.02rem,1.5vw,1.18rem);
+  color:var(--ink-2);max-width:620px;line-height:1.85;
+}
+.ghost-num{
+  position:absolute;font-family:var(--font-head);font-weight:700;
+  font-size:clamp(9rem,22vw,20rem);
+  color:#000;opacity:.034;line-height:.8;
+  top:54px;right:2%;z-index:0;pointer-events:none;user-select:none;
+}
+
+/* ---------- 진행 스크롤바 ---------- */
+.progress-bar{
+  position:fixed;top:0;left:0;height:3px;width:0%;
+  background:linear-gradient(90deg,var(--coral),var(--gold));
+  z-index:10000;transition:width .12s linear;
+}
+
+/* ---------- 내비게이션 ---------- */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:900;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 28px;
+  transition:background .35s var(--ease),box-shadow .35s var(--ease),padding .35s var(--ease);
+}
+.nav.scrolled{
+  background:rgba(246,239,225,.86);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 1px 0 var(--line);
+  padding:11px 28px;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:11px;
+  font-family:var(--font-head);font-weight:700;font-size:19px;
+}
+.nav-mark{
+  width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(135deg,var(--coral),var(--coral-2));
+  display:grid;place-items:center;flex-shrink:0;
+  box-shadow:var(--shadow-s);
+  transition:transform .4s var(--ease);
+}
+.nav-logo:hover .nav-mark{transform:rotate(-12deg) scale(1.06)}
+.nav-mark svg{width:19px;height:19px}
+.nav-links{display:flex;align-items:center;gap:6px}
+.nav-links a{
+  padding:8px 14px;border-radius:8px;font-size:14.5px;font-weight:600;
+  color:var(--ink-2);transition:color .2s,background .2s;
+}
+.nav-links a:hover{color:var(--ink);background:rgba(212,105,74,.09)}
+.nav-cta{
+  background:var(--ink);color:var(--paper)!important;
+  padding:9px 18px!important;border-radius:9px;
+  box-shadow:var(--shadow-s);
+  transition:transform .25s var(--ease),background .25s!important;
+}
+.nav-cta:hover{background:var(--coral-2)!important;transform:translateY(-2px)}
+@media(max-width:720px){.nav-links a:not(.nav-cta){display:none}}
+
+/* ---------- 버튼 ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--font-body);font-weight:700;font-size:16px;
+  padding:15px 28px;border-radius:12px;cursor:pointer;border:none;
+  transition:transform .25s var(--ease),box-shadow .25s var(--ease),background .25s;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--coral),var(--coral-2));
+  color:#fff;box-shadow:0 12px 26px -10px rgba(185,78,47,.7);
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 18px 34px -10px rgba(185,78,47,.78)}
+.btn-ghost{
+  background:var(--card);color:var(--ink);
+  border:1.5px solid var(--line);box-shadow:var(--shadow-s);
+}
+.btn-ghost:hover{transform:translateY(-3px);border-color:var(--coral);box-shadow:var(--shadow-m)}
+.btn .arrow{transition:transform .3s var(--ease)}
+.btn:hover .arrow{transform:translateX(5px)}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{
+  position:relative;
+  padding:170px 0 120px;
+  overflow:hidden;
+}
+.hero-glow{
+  position:absolute;border-radius:50%;filter:blur(90px);
+  pointer-events:none;z-index:0;
+}
+.hero-glow.g1{width:520px;height:520px;background:rgba(212,105,74,.26);top:-130px;right:-100px}
+.hero-glow.g2{width:420px;height:420px;background:rgba(111,129,89,.22);bottom:-160px;left:-130px}
+.hero-grid{
+  position:relative;z-index:2;
+  display:grid;grid-template-columns:1.06fr .94fr;gap:60px;align-items:center;
+}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:46px}}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:9px;
+  background:var(--card);border:1.5px solid var(--line);
+  padding:8px 15px;border-radius:999px;
+  font-size:13.5px;font-weight:700;color:var(--ink-2);
+  box-shadow:var(--shadow-s);margin-bottom:26px;
+}
+.hero-badge .dot{
+  width:8px;height:8px;border-radius:50%;background:var(--sage);
+  box-shadow:0 0 0 0 rgba(111,129,89,.6);
+  animation:pulse 2.4s infinite;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(111,129,89,.5)}
+  70%{box-shadow:0 0 0 10px rgba(111,129,89,0)}
+  100%{box-shadow:0 0 0 0 rgba(111,129,89,0)}
+}
+.hero h1{
+  font-family:var(--font-head);font-weight:700;
+  font-size:clamp(2.5rem,6vw,4.4rem);
+  line-height:1.18;letter-spacing:-.025em;
+  margin-bottom:24px;
+}
+.hero h1 .accent{
+  color:var(--coral-2);position:relative;display:inline-block;
+}
+.hero h1 .accent::after{
+  content:"";position:absolute;left:0;right:0;bottom:6px;height:14px;
+  background:rgba(212,105,74,.2);z-index:-1;border-radius:4px;
+  transform:scaleX(0);transform-origin:left;
+  animation:underline 1s var(--ease) 1s forwards;
+}
+@keyframes underline{to{transform:scaleX(1)}}
+.hero-sub{
+  font-size:clamp(1.05rem,1.7vw,1.25rem);
+  color:var(--ink-2);line-height:1.88;max-width:520px;margin-bottom:18px;
+}
+.hero-analogy{
+  display:flex;gap:12px;align-items:flex-start;
+  background:rgba(192,138,60,.1);
+  border-left:3px solid var(--gold);
+  border-radius:0 10px 10px 0;
+  padding:14px 18px;margin-bottom:32px;max-width:520px;
+  font-size:15px;color:#6f5a32;line-height:1.7;
+}
+.hero-analogy .emo{font-size:20px;line-height:1.4}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:34px}
+.hero-meta{display:flex;gap:26px;flex-wrap:wrap}
+.hero-meta .item{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--ink-2)}
+.hero-meta .item b{font-weight:700;color:var(--ink)}
+.hero-meta .ic{
+  width:30px;height:30px;border-radius:8px;background:var(--card);
+  border:1.5px solid var(--line);display:grid;place-items:center;font-size:15px;
+}
+
+/* 히어로 우측 — 설치 여정 카드 */
+.journey{
+  position:relative;z-index:2;
+  background:var(--card);
+  border:1.5px solid var(--line);
+  border-radius:20px;padding:28px;
+  box-shadow:var(--shadow-l);
+  transform:rotate(1.4deg);
+}
+.journey::before{
+  content:"";position:absolute;inset:0;
+  border-radius:20px;border:1.5px solid var(--line);
+  transform:rotate(-2.8deg);z-index:-1;
+  background:var(--paper-2);
+}
+.journey-top{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:16px;margin-bottom:6px;border-bottom:1.5px dashed var(--line);
+}
+.journey-top .ttl{font-family:var(--font-head);font-weight:700;font-size:17px}
+.journey-top .stamp{
+  font-size:11px;font-weight:700;letter-spacing:.1em;
+  color:var(--sage);border:1.5px solid var(--sage);
+  padding:3px 9px;border-radius:6px;transform:rotate(6deg);
+}
+.j-step{
+  display:flex;gap:14px;align-items:center;padding:13px 0;
+  border-bottom:1px solid var(--line-soft);
+}
+.j-step:last-child{border-bottom:none}
+.j-num{
+  width:32px;height:32px;border-radius:9px;flex-shrink:0;
+  display:grid;place-items:center;font-weight:700;font-size:14px;
+  font-family:var(--font-mono);
+  background:var(--paper-2);color:var(--ink-2);
+}
+.j-step.done .j-num{background:var(--sage);color:#fff}
+.j-step.active .j-num{background:var(--coral);color:#fff}
+.j-body .jt{font-weight:700;font-size:15px}
+.j-body .jd{font-size:13px;color:var(--ink-3)}
+.j-check{margin-left:auto;font-size:16px;color:var(--sage)}
+
+/* ============================================================
+   띠 — 신뢰 / 한 줄 요약
+   ============================================================ */
+.ribbon{
+  background:var(--ink);color:var(--paper);
+  padding:30px 0;position:relative;overflow:hidden;
+}
+.ribbon-track{
+  display:flex;gap:48px;white-space:nowrap;
+  font-family:var(--font-head);font-size:20px;
+  animation:marquee 32s linear infinite;
+}
+@keyframes marquee{to{transform:translateX(-50%)}}
+.ribbon-track span{display:flex;align-items:center;gap:48px}
+.ribbon-track i{color:var(--coral);font-style:normal}
+@media(prefers-reduced-motion:reduce){.ribbon-track{animation:none}}
+
+/* ============================================================
+   공통 — reveal 애니메이션
+   ============================================================ */
+.reveal{
+  opacity:0;transform:translateY(34px);
+  transition:opacity .8s var(--ease),transform .8s var(--ease);
+}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.09s}
+.reveal.d2{transition-delay:.18s}
+.reveal.d3{transition-delay:.27s}
+.reveal.d4{transition-delay:.36s}
+@media(prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+}
+
+/* ============================================================
+   "이게 뭔가요" — 소개 카드
+   ============================================================ */
+.intro{background:var(--paper-2)}
+.intro-head{max-width:680px;margin-bottom:54px}
+.tri{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
+}
+@media(max-width:820px){.tri{grid-template-columns:1fr}}
+.tri-card{
+  background:var(--card);border:1.5px solid var(--line);
+  border-radius:16px;padding:30px 26px;
+  box-shadow:var(--shadow-s);
+  transition:transform .4s var(--ease),box-shadow .4s var(--ease),border-color .4s;
+}
+.tri-card:hover{transform:translateY(-7px);box-shadow:var(--shadow-m);border-color:#dcc9a4}
+.tri-ic{
+  width:52px;height:52px;border-radius:13px;
+  display:grid;place-items:center;font-size:25px;margin-bottom:18px;
+  background:linear-gradient(135deg,#faf3e4,#f1e4c8);
+  border:1.5px solid var(--line);
+}
+.tri-card h3{font-family:var(--font-head);font-weight:700;font-size:21px;margin-bottom:10px}
+.tri-card p{font-size:15.5px;color:var(--ink-2);line-height:1.8}
+.tri-card .mini{
+  margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);
+  font-size:13.5px;color:#7a6a4a;display:flex;gap:8px;align-items:flex-start;
+}
+.tri-card .mini b{color:var(--coral-2);font-weight:700}
+
+/* ============================================================
+   준비물 — 장보기 체크
+   ============================================================ */
+.prep-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:50px;
+}
+@media(max-width:760px){.prep-grid{grid-template-columns:1fr}}
+.prep-card{
+  position:relative;
+  background:var(--card);border:1.5px solid var(--line);
+  border-radius:16px;padding:26px 26px 24px;
+  box-shadow:var(--shadow-s);overflow:hidden;
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease);
+}
+.prep-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-m)}
+.prep-card .order{
+  position:absolute;top:18px;right:22px;
+  font-family:var(--font-head);font-weight:700;font-size:46px;
+  color:#000;opacity:.06;line-height:1;
+}
+.prep-top{display:flex;align-items:center;gap:13px;margin-bottom:14px}
+.prep-emo{
+  width:48px;height:48px;border-radius:12px;flex-shrink:0;
+  display:grid;place-items:center;font-size:23px;
+  background:linear-gradient(135deg,#faf3e4,#f1e4c8);
+  border:1.5px solid var(--line);
+}
+.prep-card h3{font-family:var(--font-head);font-weight:700;font-size:19px}
+.prep-card .role{font-size:12.5px;font-weight:700;color:var(--coral-2);letter-spacing:.04em}
+.prep-card p{font-size:15px;color:var(--ink-2);line-height:1.8}
+.prep-card .analogy{
+  margin-top:14px;background:rgba(111,129,89,.1);
+  border-radius:10px;padding:11px 14px;
+  font-size:13.5px;color:#4f5b40;line-height:1.65;
+}
+.prep-card .analogy b{font-weight:700}
+
+/* ============================================================
+   두 갈래 길 — 방법 선택
+   ============================================================ */
+.fork{background:var(--paper-2)}
+.fork-head{text-align:center;max-width:640px;margin:0 auto 50px}
+.fork-head .section-tag{justify-content:center}
+.path-pick{
+  display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:18px;
+}
+@media(max-width:760px){.path-pick{grid-template-columns:1fr}}
+.path-card{
+  position:relative;cursor:pointer;
+  background:var(--card);border:2px solid var(--line);
+  border-radius:18px;padding:30px 28px;
+  box-shadow:var(--shadow-s);
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .3s;
+}
+.path-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-m)}
+.path-card.sel{border-color:var(--coral);box-shadow:0 18px 40px -16px rgba(212,105,74,.45)}
+.path-card.sel::after{
+  content:"✓ 선택됨";
+  position:absolute;top:-13px;left:28px;
+  background:var(--coral);color:#fff;
+  font-size:12px;font-weight:700;letter-spacing:.04em;
+  padding:5px 13px;border-radius:999px;
+  box-shadow:var(--shadow-s);
+}
+.path-tier{
+  display:inline-block;font-size:12px;font-weight:700;letter-spacing:.05em;
+  padding:4px 11px;border-radius:999px;margin-bottom:16px;
+}
+.path-tier.easy{background:rgba(111,129,89,.16);color:var(--sage)}
+.path-tier.power{background:rgba(192,138,60,.16);color:var(--gold)}
+.path-card h3{font-family:var(--font-head);font-weight:700;font-size:24px;margin-bottom:6px}
+.path-card .pa{font-size:14px;color:var(--coral-2);font-weight:700;margin-bottom:13px}
+.path-card .pd{font-size:15px;color:var(--ink-2);line-height:1.8;margin-bottom:18px}
+.path-card ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.path-card li{display:flex;gap:9px;font-size:14.5px;color:var(--ink-2);align-items:flex-start}
+.path-card li svg{flex-shrink:0;margin-top:4px}
+.fork-hint{
+  text-align:center;font-size:14.5px;color:var(--ink-3);
+}
+
+/* ============================================================
+   설치 STEP — 가이드 본문
+   ============================================================ */
+.steps-head{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:24px;flex-wrap:wrap;margin-bottom:46px;
+}
+.path-switch{display:flex;gap:6px;background:var(--paper-2);padding:6px;border-radius:13px;border:1.5px solid var(--line)}
+.path-switch button{
+  font-family:var(--font-body);font-weight:700;font-size:14px;
+  padding:10px 18px;border-radius:9px;border:none;cursor:pointer;
+  background:transparent;color:var(--ink-2);
+  transition:background .25s,color .25s,box-shadow .25s;
+}
+.path-switch button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow-s)}
+
+.path-panel{display:none}
+.path-panel.show{display:block;animation:fadeUp .55s var(--ease)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+.step{
+  position:relative;
+  display:grid;grid-template-columns:auto 1fr;gap:30px;
+  padding-bottom:42px;
+}
+@media(max-width:680px){.step{grid-template-columns:1fr;gap:14px}}
+.step-rail{display:flex;flex-direction:column;align-items:center}
+.step-dot{
+  width:54px;height:54px;border-radius:50%;flex-shrink:0;
+  display:grid;place-items:center;
+  font-family:var(--font-head);font-weight:700;font-size:22px;
+  background:var(--card);border:2px solid var(--coral);color:var(--coral-2);
+  box-shadow:var(--shadow-s);z-index:2;
+}
+.step-line{
+  width:2px;flex:1;background:repeating-linear-gradient(var(--line) 0 6px,transparent 6px 12px);
+  margin:6px 0;
+}
+.step:last-child .step-line{display:none}
+@media(max-width:680px){.step-rail{flex-direction:row;gap:12px}.step-line{display:none!important}}
+
+.step-body{
+  background:var(--card);border:1.5px solid var(--line);
+  border-radius:16px;padding:26px 28px;
+  box-shadow:var(--shadow-s);
+  transition:box-shadow .35s var(--ease),transform .35s var(--ease);
+}
+.step-body:hover{box-shadow:var(--shadow-m);transform:translateY(-3px)}
+.step-body h3{font-family:var(--font-head);font-weight:700;font-size:21px;margin-bottom:8px}
+.step-body .lede{font-size:15.5px;color:var(--ink-2);line-height:1.8;margin-bottom:8px}
+.step-tip{
+  display:flex;gap:10px;align-items:flex-start;
+  background:rgba(192,138,60,.1);border-radius:10px;
+  padding:12px 15px;margin-top:14px;
+  font-size:14px;color:#6f5a32;line-height:1.7;
+}
+.step-tip.sage{background:rgba(111,129,89,.11);color:#4f5b40}
+.step-tip .ti{font-size:16px;flex-shrink:0}
+
+.substep{
+  counter-reset:sub;
+  list-style:none;margin:16px 0 4px;display:flex;flex-direction:column;gap:11px;
+}
+.substep li{
+  position:relative;padding-left:34px;
+  font-size:15px;color:var(--ink-2);line-height:1.75;
+}
+.substep li::before{
+  counter-increment:sub;content:counter(sub);
+  position:absolute;left:0;top:1px;
+  width:23px;height:23px;border-radius:50%;
+  background:var(--paper-2);border:1.5px solid var(--line);
+  display:grid;place-items:center;
+  font-size:12px;font-weight:700;font-family:var(--font-mono);color:var(--ink-2);
+}
+.substep li b{color:var(--ink);font-weight:700}
+.substep kbd{
+  font-family:var(--font-mono);font-size:12.5px;font-weight:600;
+  background:var(--paper-2);border:1.5px solid var(--line);
+  border-bottom-width:3px;border-radius:6px;padding:2px 8px;color:var(--ink);
+}
+
+/* 코드블럭 — 가짜 PowerShell 창 */
+.code-win{
+  margin:16px 0 4px;border-radius:12px;overflow:hidden;
+  border:1.5px solid var(--code-line);
+  box-shadow:var(--shadow-m);
+}
+.code-bar{
+  background:#3d372e;display:flex;align-items:center;gap:8px;
+  padding:10px 14px;
+}
+.code-bar .traffic{display:flex;gap:6px}
+.code-bar .traffic i{width:11px;height:11px;border-radius:50%;display:block}
+.code-bar .traffic i:nth-child(1){background:#e0664c}
+.code-bar .traffic i:nth-child(2){background:#d6a23c}
+.code-bar .traffic i:nth-child(3){background:#7d9a5b}
+.code-bar .ctitle{
+  font-family:var(--font-mono);font-size:12px;color:#b9b0a0;
+  margin-left:6px;display:flex;align-items:center;gap:7px;
+}
+.code-bar .ctitle::before{content:"⌘";color:#8a8270}
+.code-body{
+  background:var(--code-bg);padding:18px 18px;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
+}
+.code-body pre{
+  font-family:var(--font-mono);font-size:14px;line-height:1.7;
+  color:var(--code-ink);overflow-x:auto;flex:1;
+}
+.code-body pre .pmt{color:#d6a23c;user-select:none}
+.code-body pre .cmd{color:#f3ead7}
+.code-body pre .cm{color:#8a8270}
+.copy-btn{
+  flex-shrink:0;display:flex;align-items:center;gap:6px;
+  font-family:var(--font-body);font-size:12.5px;font-weight:700;
+  background:#4a443a;color:#f3ead7;border:1px solid #5c554a;
+  padding:7px 12px;border-radius:8px;cursor:pointer;
+  transition:background .2s,transform .2s;
+}
+.copy-btn:hover{background:#5c554a;transform:translateY(-1px)}
+.copy-btn.done{background:var(--sage);border-color:var(--sage);color:#fff}
+.copy-btn svg{width:14px;height:14px}
+
+.expect{
+  margin-top:13px;border:1.5px dashed var(--line);border-radius:10px;
+  padding:12px 15px;background:var(--paper);
+  font-size:13.5px;color:var(--ink-2);
+}
+.expect b{color:var(--sage);font-weight:700}
+.expect code{
+  font-family:var(--font-mono);font-size:12.5px;
+  background:var(--paper-2);padding:1.5px 6px;border-radius:5px;
+}
+
+/* ============================================================
+   비교표
+   ============================================================ */
+.compare-wrap{margin-top:48px;border-radius:16px;overflow:hidden;border:1.5px solid var(--line);box-shadow:var(--shadow-m)}
+table.compare{width:100%;border-collapse:collapse;background:var(--card);font-size:15px}
+table.compare th,table.compare td{padding:18px 20px;text-align:left;border-bottom:1px solid var(--line-soft)}
+table.compare thead th{
+  background:var(--ink);color:var(--paper);
+  font-family:var(--font-head);font-weight:700;font-size:16px;
+}
+table.compare thead th:first-child{font-family:var(--font-body);font-size:13px;color:#b9b0a0;font-weight:700}
+table.compare tbody tr:last-child td{border-bottom:none}
+table.compare tbody tr{transition:background .2s}
+table.compare tbody tr:hover{background:var(--paper)}
+table.compare td:first-child{font-weight:700;color:var(--ink);width:24%}
+table.compare .cell-emo{margin-right:7px}
+@media(max-width:680px){
+  table.compare th,table.compare td{padding:13px 13px;font-size:13.5px}
+}
+
+/* ============================================================
+   추천 순서 — 인터랙티브 체크리스트
+   ============================================================ */
+.route{background:var(--paper-2)}
+.route-grid{display:grid;grid-template-columns:1fr 1fr;gap:46px;align-items:start}
+@media(max-width:840px){.route-grid{grid-template-columns:1fr;gap:34px}}
+.route-prog{
+  background:var(--card);border:1.5px solid var(--line);
+  border-radius:16px;padding:26px;box-shadow:var(--shadow-s);
+  position:sticky;top:90px;
+}
+.route-prog .pct{
+  font-family:var(--font-head);font-weight:700;
+  font-size:54px;line-height:1;color:var(--coral-2);
+}
+.route-prog .plabel{font-size:14px;color:var(--ink-2);margin:6px 0 18px}
+.prog-track{height:12px;background:var(--paper-2);border-radius:999px;overflow:hidden;border:1.5px solid var(--line)}
+.prog-fill{
+  height:100%;width:0%;border-radius:999px;
+  background:linear-gradient(90deg,var(--coral),var(--gold));
+  transition:width .6s var(--ease);
+}
+.route-prog .done-msg{
+  margin-top:18px;font-size:14px;color:var(--sage);font-weight:700;
+  opacity:0;transform:translateY(8px);transition:.4s var(--ease);
+}
+.route-prog .done-msg.show{opacity:1;transform:none}
+.route-prog .hint{margin-top:14px;font-size:13px;color:var(--ink-3);line-height:1.7}
+
+.checklist{display:flex;flex-direction:column;gap:13px}
+.check-item{
+  display:flex;gap:15px;align-items:flex-start;cursor:pointer;
+  background:var(--card);border:1.5px solid var(--line);
+  border-radius:13px;padding:18px 20px;
+  transition:border-color .25s,box-shadow .25s,transform .25s var(--ease);
+}
+.check-item:hover{border-color:#dcc9a4;box-shadow:var(--shadow-s);transform:translatex(3px)}
+.check-box{
+  width:26px;height:26px;border-radius:8px;flex-shrink:0;
+  border:2px solid var(--line);background:var(--paper);
+  display:grid;place-items:center;
+  transition:background .25s var(--ease),border-color .25s;
+}
+.check-box svg{width:14px;height:14px;opacity:0;transform:scale(.4);transition:.3s var(--ease)}
+.check-item.checked .check-box{background:var(--sage);border-color:var(--sage)}
+.check-item.checked .check-box svg{opacity:1;transform:scale(1)}
+.check-item.checked .ci-title{color:var(--ink-3);text-decoration:line-through}
+.ci-num{
+  font-family:var(--font-mono);font-size:13px;font-weight:700;
+  color:var(--coral-2);flex-shrink:0;margin-top:2px;
+}
+.ci-title{font-weight:700;font-size:16px;transition:color .25s}
+.ci-desc{font-size:14px;color:var(--ink-2);line-height:1.7}
+
+/* ============================================================
+   FAQ
+   ============================================================ */
+.faq-list{margin-top:46px;display:flex;flex-direction:column;gap:12px;max-width:820px}
+.faq{
+  background:var(--card);border:1.5px solid var(--line);
+  border-radius:13px;overflow:hidden;
+  transition:border-color .25s,box-shadow .25s;
+}
+.faq.open{border-color:#dcc9a4;box-shadow:var(--shadow-s)}
+.faq-q{
+  display:flex;align-items:center;gap:16px;cursor:pointer;
+  padding:20px 22px;font-weight:700;font-size:16.5px;
+}
+.faq-q .qmark{
+  width:28px;height:28px;border-radius:8px;flex-shrink:0;
+  background:rgba(212,105,74,.13);color:var(--coral-2);
+  display:grid;place-items:center;
+  font-family:var(--font-head);font-weight:700;font-size:15px;
+}
+.faq-q .qtoggle{
+  margin-left:auto;flex-shrink:0;width:24px;height:24px;
+  position:relative;transition:transform .35s var(--ease);
+}
+.faq-q .qtoggle::before,.faq-q .qtoggle::after{
+  content:"";position:absolute;background:var(--coral-2);border-radius:2px;
+}
+.faq-q .qtoggle::before{top:11px;left:3px;right:3px;height:2.5px}
+.faq-q .qtoggle::after{left:11px;top:3px;bottom:3px;width:2.5px;transition:opacity .3s}
+.faq.open .qtoggle{transform:rotate(180deg)}
+.faq.open .qtoggle::after{opacity:0}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s var(--ease)}
+.faq-a-inner{
+  padding:0 22px 22px 66px;
+  font-size:15px;color:var(--ink-2);line-height:1.85;
+}
+.faq-a-inner code{
+  font-family:var(--font-mono);font-size:13px;
+  background:var(--paper-2);padding:2px 7px;border-radius:5px;color:var(--ink);
+}
+.faq-a-inner b{color:var(--ink);font-weight:700}
+
+/* ============================================================
+   마무리 CTA
+   ============================================================ */
+.outro{
+  background:var(--ink);color:var(--paper);
+  text-align:center;position:relative;overflow:hidden;
+}
+.outro .glow{
+  position:absolute;width:560px;height:560px;border-radius:50%;
+  background:radial-gradient(circle,rgba(212,105,74,.34),transparent 68%);
+  top:-200px;left:50%;transform:translateX(-50%);pointer-events:none;
+}
+.outro-inner{position:relative;z-index:2;max-width:640px;margin:0 auto}
+.outro h2{
+  font-family:var(--font-head);font-weight:700;
+  font-size:clamp(2rem,4.5vw,3.1rem);line-height:1.3;margin-bottom:18px;
+}
+.outro p{font-size:17px;color:#c9c0b0;line-height:1.85;margin-bottom:32px}
+.outro .btn-primary{box-shadow:0 14px 34px -10px rgba(212,105,74,.6)}
+.outro-steps{
+  display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:34px;
+}
+.outro-steps span{
+  font-size:13px;font-weight:700;color:#b9b0a0;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  padding:7px 14px;border-radius:999px;
+}
+.outro-steps span i{color:var(--coral);font-style:normal;margin-right:6px}
+
+/* ============================================================
+   푸터
+   ============================================================ */
+.footer{background:var(--paper-2);padding:54px 0 40px;border-top:1.5px solid var(--line)}
+.footer-grid{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;align-items:flex-start}
+.footer-brand{max-width:340px}
+.footer-brand .nav-logo{margin-bottom:12px}
+.footer-brand p{font-size:14px;color:var(--ink-3);line-height:1.8}
+.footer-links{display:flex;gap:54px;flex-wrap:wrap}
+.footer-col h4{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:14px}
+.footer-col a{display:block;font-size:14.5px;color:var(--ink-2);padding:5px 0;transition:color .2s}
+.footer-col a:hover{color:var(--coral-2)}
+.footer-bottom{
+  margin-top:40px;padding-top:24px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  font-size:13px;color:var(--ink-3);
+}
+.footer-bottom .made{display:flex;align-items:center;gap:7px}
+
+/* 토스트 */
+.toast{
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(120px);
+  background:var(--ink);color:var(--paper);
+  padding:13px 22px;border-radius:11px;
+  font-size:14.5px;font-weight:600;
+  box-shadow:var(--shadow-l);z-index:10001;
+  display:flex;align-items:center;gap:9px;
+  transition:transform .45s var(--ease);
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast svg{width:17px;height:17px}
+</style>
+</head>
+<body>
+
+<!-- 진행 바 -->
+<div class="progress-bar" id="progress"></div>
+
+<!-- ============ 내비게이션 ============ -->
+<nav class="nav" id="nav">
+  <a href="#top" class="nav-logo">
+    <span class="nav-mark">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M7 8l-4 4 4 4M17 8l4 4-4 4M14 4l-4 16" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    Claude Code 설치집
+  </a>
+  <div class="nav-links">
+    <a href="#intro">이게 뭔가요</a>
+    <a href="#prep">준비물</a>
+    <a href="#fork">설치 방법</a>
+    <a href="#faq">자주 막히는 곳</a>
+    <a href="#fork" class="nav-cta">설치 시작 →</a>
+  </div>
+</nav>
+
+<!-- ============ 히어로 ============ -->
+<header class="hero" id="top">
+  <div class="hero-glow g1"></div>
+  <div class="hero-glow g2"></div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-text">
+        <div class="hero-badge">
+          <span class="dot"></span>
+          Windows 사용자를 위한 친절한 설치 안내서
+        </div>
+        <h1>
+          Claude Code,<br />
+          <span class="accent">내 컴퓨터로</span><br />
+          데려오기
+        </h1>
+        <p class="hero-sub">
+          터미널이 뭔지 몰라도 괜찮아요. 코딩을 한 줄도 못 해도 괜찮고요.
+          새 가전제품 설명서를 보듯, 한 칸씩 따라오기만 하면 됩니다.
+        </p>
+        <div class="hero-analogy">
+          <span class="emo">🏠</span>
+          <span><b>Claude Code</b>는 내 컴퓨터 안에서 같이 일하는 AI 동료예요.
+          이 가이드는 그 동료를 우리 집(컴퓨터)에 들이는 <b>입주 절차서</b>라고 생각하면 돼요.</span>
+        </div>
+        <div class="hero-cta">
+          <a href="#prep" class="btn btn-primary">준비물부터 챙기기 <span class="arrow">→</span></a>
+          <a href="#fork" class="btn btn-ghost">두 가지 방법 비교</a>
+        </div>
+        <div class="hero-meta">
+          <div class="item"><span class="ic">⏱️</span> <span><b>약 15분</b>이면 끝</span></div>
+          <div class="item"><span class="ic">🧰</span> <span>준비물 <b>4가지</b></span></div>
+          <div class="item"><span class="ic">🪟</span> <span><b>Windows 10</b> 이상</span></div>
+        </div>
+      </div>
+
+      <!-- 설치 여정 카드 -->
+      <aside class="journey" aria-hidden="true">
+        <div class="journey-top">
+          <span class="ttl">오늘의 입주 일정</span>
+          <span class="stamp">EASY</span>
+        </div>
+        <div class="j-step done">
+          <span class="j-num">✓</span>
+          <span class="j-body"><span class="jt">내 윈도우 버전 확인</span><span class="jd">집 문이 맞는 규격인지 점검</span></span>
+          <span class="j-check">✓</span>
+        </div>
+        <div class="j-step done">
+          <span class="j-num">✓</span>
+          <span class="j-body"><span class="jt">준비물 챙기기</span><span class="jd">Node.js · Git 장보기</span></span>
+          <span class="j-check">✓</span>
+        </div>
+        <div class="j-step active">
+          <span class="j-num">3</span>
+          <span class="j-body"><span class="jt">설치 방법 고르기</span><span class="jd">터미널 vs VS Code</span></span>
+        </div>
+        <div class="j-step">
+          <span class="j-num">4</span>
+          <span class="j-body"><span class="jt">설치 & 버전 확인</span><span class="jd">택배 송장 찍어보기</span></span>
+        </div>
+        <div class="j-step">
+          <span class="j-num">5</span>
+          <span class="j-body"><span class="jt">로그인하고 첫 인사</span><span class="jd">동료에게 일 시키기</span></span>
+        </div>
+      </aside>
+    </div>
+  </div>
+</header>
+
+<!-- ============ 흐르는 띠 ============ -->
+<div class="ribbon" aria-hidden="true">
+  <div class="ribbon-track">
+    <span>
+      코딩 몰라도 OK <i>✦</i> 터미널 처음이어도 OK <i>✦</i> 복사 &amp; 붙여넣기면 충분 <i>✦</i>
+      한 단계씩 천천히 <i>✦</i> 막히면 FAQ로 <i>✦</i>
+    </span>
+    <span>
+      코딩 몰라도 OK <i>✦</i> 터미널 처음이어도 OK <i>✦</i> 복사 &amp; 붙여넣기면 충분 <i>✦</i>
+      한 단계씩 천천히 <i>✦</i> 막히면 FAQ로 <i>✦</i>
+    </span>
+  </div>
+</div>
+
+<!-- ============ 이게 뭔가요 ============ -->
+<section class="section intro" id="intro">
+  <div class="wrap">
+    <span class="ghost-num">01</span>
+    <div class="intro-head reveal">
+      <span class="section-tag">먼저, 이게 뭔가요</span>
+      <h2 class="section-title">Claude Code가 뭐길래<br />내 컴퓨터에 들이나요?</h2>
+      <p class="section-lead">
+        쉽게 말하면 — <b>내 컴퓨터 파일을 직접 보고, 고치고, 만들어 줄 수 있는 AI 동료</b>예요.
+        채팅창에 글만 주고받는 AI가 아니라, 실제로 손을 움직여 일을 해주는 게 핵심이죠.
+      </p>
+    </div>
+    <div class="tri">
+      <div class="tri-card reveal d1">
+        <div class="tri-ic">💬</div>
+        <h3>무엇을 하나요</h3>
+        <p>"이 폴더 정리해줘", "이 파일 고쳐줘"처럼 평소 말로 부탁하면, AI가 직접 내 컴퓨터에서 그 일을 처리해 줘요.</p>
+        <div class="mini">💡 <span><b>비유하면</b> — 말귀 알아듣는 조수가 책상 옆에 앉아있는 셈</span></div>
+      </div>
+      <div class="tri-card reveal d2">
+        <div class="tri-ic">🛠️</div>
+        <h3>어떻게 쓰나요</h3>
+        <p>설치만 끝나면 두 가지 방식으로 부를 수 있어요. 검은 화면(터미널)에서 부르거나, 익숙한 편집 프로그램 안에서 부르거나.</p>
+        <div class="mini">💡 <span><b>비유하면</b> — 같은 조수를 <b>전화로</b> 부르느냐 <b>옆자리에</b> 앉히느냐의 차이</span></div>
+      </div>
+      <div class="tri-card reveal d3">
+        <div class="tri-ic">🌱</div>
+        <h3>왜 비개발자에게도</h3>
+        <p>문서 정리, 자료 변환, 간단한 자동화까지 — 코드를 몰라도 "부탁"만 할 줄 알면 점점 더 많은 일을 맡길 수 있어요.</p>
+        <div class="mini">💡 <span><b>비유하면</b> — 처음엔 심부름, 익숙해지면 살림 전체를 맡기는 가사도우미</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 준비물 ============ -->
+<section class="section" id="prep">
+  <div class="wrap">
+    <span class="ghost-num">02</span>
+    <div class="reveal">
+      <span class="section-tag">02 · 먼저 준비할 것</span>
+      <h2 class="section-title">설치 전, 장바구니에<br />담아둘 준비물 4가지</h2>
+      <p class="section-lead">
+        요리를 시작하기 전에 재료와 도구를 먼저 꺼내두면 훨씬 수월하죠.
+        설치도 똑같아요. 아래 4가지를 <b>순서대로</b> 챙겨두면 중간에 헤맬 일이 거의 없어요.
+      </p>
+    </div>
+    <div class="prep-grid">
+      <div class="prep-card reveal d1">
+        <span class="order">1</span>
+        <div class="prep-top">
+          <div class="prep-emo">🪟</div>
+          <div>
+            <div class="role">가장 먼저 확인</div>
+            <h3>Windows 버전</h3>
+          </div>
+        </div>
+        <p>Claude Code는 <b>Windows 10 (버전 1809) 이상</b>을 기준으로 안내돼요. 너무 오래된 윈도우라면 먼저 업데이트가 필요해요.</p>
+        <div class="analogy">🏠 <b>비유</b> — 새 가구를 들이기 전에 현관문이 규격에 맞는지 재보는 단계예요.</div>
+      </div>
+      <div class="prep-card reveal d2">
+        <span class="order">2</span>
+        <div class="prep-top">
+          <div class="prep-emo">⚙️</div>
+          <div>
+            <div class="role">핵심 엔진</div>
+            <h3>Node.js (LTS)</h3>
+          </div>
+        </div>
+        <p>터미널 방식의 Claude Code는 Node.js라는 엔진 위에서 돌아가요. 공식 사이트에서 <b>LTS 버전</b>을 받으세요.</p>
+        <div class="analogy">🍳 <b>비유</b> — 요리를 하려면 먼저 가스레인지가 있어야 하죠. Node.js가 바로 그 가스레인지예요.</div>
+      </div>
+      <div class="prep-card reveal d3">
+        <span class="order">3</span>
+        <div class="prep-top">
+          <div class="prep-emo">📚</div>
+          <div>
+            <div class="role">권장 도구</div>
+            <h3>Git for Windows</h3>
+          </div>
+        </div>
+        <p>꼭 필요한 건 아니지만 <b>강력 권장</b>이에요. 설치 마법사에서는 거의 다 기본값(Next)으로 진행하면 됩니다.</p>
+        <div class="analogy">⏳ <b>비유</b> — 작업한 내용을 차곡차곡 저장해주는 타임캡슐. 있으면 두고두고 든든해요.</div>
+      </div>
+      <div class="prep-card reveal d4">
+        <span class="order">4</span>
+        <div class="prep-top">
+          <div class="prep-emo">⌨️</div>
+          <div>
+            <div class="role">명령 입력 창구</div>
+            <h3>PowerShell</h3>
+          </div>
+        </div>
+        <p>설치 명령을 입력하는 검은 화면이에요. 윈도우에 기본으로 들어있어서 따로 설치할 필요는 없어요. (CMD도 가능)</p>
+        <div class="analogy">🗣️ <b>비유</b> — 컴퓨터에게 말을 거는 대화창. 우리가 글로 부탁하면 컴퓨터가 알아듣고 움직여요.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 두 갈래 길 ============ -->
+<section class="section fork" id="fork">
+  <div class="wrap">
+    <span class="ghost-num">03</span>
+    <div class="fork-head reveal">
+      <span class="section-tag">03 · 갈림길</span>
+      <h2 class="section-title">설치 방법은 두 갈래,<br />마음에 드는 길로 가세요</h2>
+      <p class="section-lead" style="margin:0 auto;">
+        목적지는 똑같아요. 가는 길만 다를 뿐이죠. 아래 카드를 눌러 길을 골라보면,
+        그 방법에 딱 맞는 설치 단계가 아래에 펼쳐져요.
+      </p>
+    </div>
+    <div class="path-pick">
+      <div class="path-card" data-pick="terminal" tabindex="0" role="button" aria-label="터미널 전역설치 선택">
+        <span class="path-tier power">파워 유저 추천</span>
+        <h3>① 터미널 전역설치</h3>
+        <p class="pa">명령어 한 줄로 직접 설치</p>
+        <p class="pd">검은 화면(PowerShell)에 명령어를 붙여넣어 설치해요. 한 번 세팅하면 어느 폴더에서든 <b>claude</b>만 치면 불러올 수 있어요.</p>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#6f8159" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 어디서나 빠르게 호출</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#6f8159" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 자동화·반복 작업에 유리</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#6f8159" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Node.js 준비가 먼저 필요</li>
+        </ul>
+      </div>
+      <div class="path-card sel" data-pick="vscode" tabindex="0" role="button" aria-label="VS Code 확장 선택">
+        <span class="path-tier easy">처음이라면 추천</span>
+        <h3>② VS Code 확장 프로그램</h3>
+        <p class="pa">버튼 클릭만으로 설치</p>
+        <p class="pd">VS Code라는 무료 편집 프로그램 안에 Claude Code를 붙여 써요. 검은 화면이 부담스럽다면 이쪽이 훨씬 편안해요.</p>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#6f8159" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 화면에서 버튼으로 설치</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#6f8159" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 명령어 외울 필요 적음</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#6f8159" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> 결과를 눈으로 보기 편함</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fork-hint">👇 길을 고르면 아래 설치 단계가 그 길에 맞춰 바뀌어요</p>
+  </div>
+</section>
+
+<!-- ============ 설치 STEP ============ -->
+<section class="section" id="steps">
+  <div class="wrap">
+    <span class="ghost-num">04</span>
+    <div class="steps-head">
+      <div class="reveal">
+        <span class="section-tag">04 · 따라하기</span>
+        <h2 class="section-title">자, 한 단계씩<br />같이 가볼까요</h2>
+      </div>
+      <div class="path-switch reveal d1" role="tablist">
+        <button data-tab="terminal">① 터미널 전역설치</button>
+        <button data-tab="vscode" class="on">② VS Code 확장</button>
+      </div>
+    </div>
+
+    <!-- ===== 터미널 패널 ===== -->
+    <div class="path-panel" data-panel="terminal">
+
+      <div class="step">
+        <div class="step-rail"><div class="step-dot">1</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>Node.js부터 설치하기 (가스레인지 들이기)</h3>
+          <p class="lede">터미널 방식은 Node.js라는 엔진 위에서 돌아가요. 이걸 먼저 해두면 뒤가 훨씬 덜 헷갈려요.</p>
+          <ol class="substep">
+            <li>Node.js <b>공식 사이트</b>에 접속해요.</li>
+            <li><b>LTS 버전</b> 버튼을 눌러 받아요. <em>LTS = 오래 검증된 안정 버전, 갓 나온 실험판 말고 스테디셀러라고 생각하세요.</em></li>
+            <li>받은 <kbd>.msi</kbd> 파일을 더블클릭해요.</li>
+            <li>설치 마법사는 거의 <b>Next → Next → Install → Finish</b> 순서로 누르면 끝나요.</li>
+          </ol>
+          <p class="lede" style="margin-top:14px">설치가 끝나면 PowerShell을 열고 잘 들어왔는지 확인해 봐요.</p>
+          <div class="code-win">
+            <div class="code-bar"><span class="traffic"><i></i><i></i><i></i></span><span class="ctitle">Windows PowerShell</span></div>
+            <div class="code-body">
+              <pre><code><span class="pmt">PS&gt;</span> <span class="cmd">node -v</span>
+<span class="pmt">PS&gt;</span> <span class="cmd">npm -v</span></code></pre>
+              <button class="copy-btn" data-copy="node -v&#10;npm -v">
+                <svg viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.6" stroke="currentColor" stroke-width="1.7"/><path d="M11 5V3.4A1.4 1.4 0 009.6 2H3.4A1.4 1.4 0 002 3.4v6.2A1.4 1.4 0 003.4 11H5" stroke="currentColor" stroke-width="1.7"/></svg>
+                복사
+              </button>
+            </div>
+          </div>
+          <div class="expect">✅ <b>이렇게 나오면 성공</b> — <code>v20.x.x</code> 처럼 두 줄 모두 버전 숫자가 보이면 가스레인지가 잘 들어온 거예요.</div>
+          <div class="step-tip sage"><span class="ti">🌿</span><span>Git도 이 단계에서 같이 설치해두면 좋아요. 설치 마법사는 대부분 기본값(Next)으로 넘어가면 됩니다.</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-rail"><div class="step-dot">2</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>PowerShell을 관리자 권한으로 열기</h3>
+          <p class="lede">설치 명령은 컴퓨터에 무언가를 새로 들이는 작업이라, "관리자" 권한이 필요해요.</p>
+          <ol class="substep">
+            <li>시작 메뉴에서 <b>PowerShell</b>을 검색해요.</li>
+            <li>목록에서 마우스 오른쪽 클릭 → <b>관리자 권한으로 실행</b>을 눌러요.</li>
+            <li>"이 앱이 변경하도록 허용할까요?"가 뜨면 <b>예</b>를 눌러요.</li>
+          </ol>
+          <div class="step-tip"><span class="ti">🔑</span><span><b>비유</b> — 관리자 권한은 우리 집 현관 마스터키예요. 새 가구(프로그램)를 들일 땐 잠깐 이 키가 필요하답니다.</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-rail"><div class="step-dot">3</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>설치 명령어 한 줄 붙여넣기</h3>
+          <p class="lede">이제 핵심이에요. 아래 명령어를 복사해서 PowerShell 창에 붙여넣고 <kbd>Enter</kbd>를 누르세요. 설치가 자동으로 진행돼요.</p>
+          <div class="code-win">
+            <div class="code-bar"><span class="traffic"><i></i><i></i><i></i></span><span class="ctitle">Windows PowerShell · 관리자</span></div>
+            <div class="code-body">
+              <pre><code><span class="pmt">PS&gt;</span> <span class="cmd">irm https://claude.ai/install.ps1 | iex</span></code></pre>
+              <button class="copy-btn" data-copy="irm https://claude.ai/install.ps1 | iex">
+                <svg viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.6" stroke="currentColor" stroke-width="1.7"/><path d="M11 5V3.4A1.4 1.4 0 009.6 2H3.4A1.4 1.4 0 002 3.4v6.2A1.4 1.4 0 003.4 11H5" stroke="currentColor" stroke-width="1.7"/></svg>
+                복사
+              </button>
+            </div>
+          </div>
+          <div class="step-tip"><span class="ti">📦</span><span><b>비유</b> — 이 한 줄은 "택배 주문 버튼"이에요. 누르면 컴퓨터가 알아서 Claude Code를 받아와 설치까지 끝내줘요. 잠시 기다리면 됩니다.</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-rail"><div class="step-dot">4</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>제대로 도착했는지 버전 확인</h3>
+          <p class="lede">설치가 끝났다는 메시지가 보이면, 정말 잘 들어왔는지 송장을 찍어봐요.</p>
+          <div class="code-win">
+            <div class="code-bar"><span class="traffic"><i></i><i></i><i></i></span><span class="ctitle">Windows PowerShell</span></div>
+            <div class="code-body">
+              <pre><code><span class="pmt">PS&gt;</span> <span class="cmd">claude --version</span></code></pre>
+              <button class="copy-btn" data-copy="claude --version">
+                <svg viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.6" stroke="currentColor" stroke-width="1.7"/><path d="M11 5V3.4A1.4 1.4 0 009.6 2H3.4A1.4 1.4 0 002 3.4v6.2A1.4 1.4 0 003.4 11H5" stroke="currentColor" stroke-width="1.7"/></svg>
+                복사
+              </button>
+            </div>
+          </div>
+          <div class="expect">✅ <b>이렇게 나오면 성공</b> — 버전 번호가 한 줄 출력되면 설치 완료예요! <code>claude : 용어가 인식되지 않습니다</code> 라고 나오면 PowerShell을 완전히 닫았다 다시 열어보세요.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-rail"><div class="step-dot">5</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>처음 실행하고 로그인하기</h3>
+          <p class="lede">마지막이에요. <kbd>claude</kbd>를 입력해 실행하면, 처음엔 로그인이나 인증 안내가 떠요. 화면 안내를 그대로 따라가면 끝납니다.</p>
+          <div class="code-win">
+            <div class="code-bar"><span class="traffic"><i></i><i></i><i></i></span><span class="ctitle">Windows PowerShell</span></div>
+            <div class="code-body">
+              <pre><code><span class="pmt">PS&gt;</span> <span class="cmd">claude</span></code></pre>
+              <button class="copy-btn" data-copy="claude">
+                <svg viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.6" stroke="currentColor" stroke-width="1.7"/><path d="M11 5V3.4A1.4 1.4 0 009.6 2H3.4A1.4 1.4 0 002 3.4v6.2A1.4 1.4 0 003.4 11H5" stroke="currentColor" stroke-width="1.7"/></svg>
+                복사
+              </button>
+            </div>
+          </div>
+          <div class="step-tip sage"><span class="ti">🎉</span><span><b>다 됐어요!</b> 이제 AI 동료가 입주를 마쳤습니다. 어느 폴더에서든 <kbd>claude</kbd>만 치면 부를 수 있어요.</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== VS Code 패널 ===== -->
+    <div class="path-panel show" data-panel="vscode">
+
+      <div class="step">
+        <div class="step-rail"><div class="step-dot">1</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>VS Code 설치하고 열기 (작업 책상 들이기)</h3>
+          <p class="lede">VS Code는 마이크로소프트가 만든 무료 편집 프로그램이에요. AI 동료가 앉을 책상이라고 생각하면 돼요.</p>
+          <ol class="substep">
+            <li>검색창에 <b>"VS Code 다운로드"</b>를 검색해 공식 사이트로 들어가요.</li>
+            <li>Windows용 설치 파일을 받아 더블클릭하고, <b>기본값으로</b> 설치해요.</li>
+            <li>설치가 끝나면 <b>VS Code를 실행</b>해요.</li>
+          </ol>
+          <div class="step-tip sage"><span class="ti">🪑</span><span><b>비유</b> — 검은 터미널 화면이 부담스럽다면, 이 방법은 밝고 익숙한 책상 위에서 AI를 부르는 느낌이라 훨씬 편안해요.</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-rail"><div class="step-dot">2</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>확장 프로그램 메뉴 열기</h3>
+          <p class="lede">VS Code에는 기능을 덧붙이는 "확장 프로그램" 가게가 있어요. 거기서 Claude Code를 찾을 거예요.</p>
+          <ol class="substep">
+            <li>왼쪽 사이드바에서 <b>네모 4개 모양</b>의 Extensions 아이콘을 눌러요.</li>
+            <li>또는 키보드로 <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>X</kbd>를 동시에 눌러요.</li>
+          </ol>
+          <div class="step-tip"><span class="ti">🧩</span><span><b>비유</b> — 확장 프로그램 가게는 스마트폰의 앱스토어와 똑같아요. 필요한 기능을 검색해서 "설치" 버튼만 누르면 되죠.</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-rail"><div class="step-dot">3</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>Claude 검색하고 설치 버튼 누르기</h3>
+          <p class="lede">이제 가게에서 우리가 찾는 동료를 검색할 차례예요.</p>
+          <ol class="substep">
+            <li>검색창에 <kbd>Claude Code</kbd> 또는 <kbd>Claude</kbd>를 입력해요.</li>
+            <li>게시자(Publisher)가 <b>Anthropic</b>으로 표시된 정품을 찾아요. <em>— 이게 가장 중요해요!</em></li>
+            <li>그 확장 프로그램의 <b>Install</b> 버튼을 눌러요.</li>
+          </ol>
+          <div class="step-tip"><span class="ti">🔎</span><span><b>비유</b> — 같은 이름의 짝퉁이 섞여 있을 수 있어요. 정품 마크(<b>Anthropic</b>)를 꼭 확인하는 건, 택배에서 정품 인증 스티커를 보는 것과 같아요.</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-rail"><div class="step-dot">4</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>VS Code 다시 시작하기</h3>
+          <p class="lede">새 기능이 제대로 자리잡으려면 프로그램을 한 번 새로고침 해줘야 해요.</p>
+          <ol class="substep">
+            <li>설치가 끝나면 <b>VS Code를 완전히 닫았다 다시 열어요.</b></li>
+            <li>또는 <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>를 누르고 <b>Reload Window</b>를 검색해 실행해요.</li>
+          </ol>
+          <div class="step-tip"><span class="ti">🔄</span><span><b>비유</b> — 새 가구를 들인 뒤 방을 한 바퀴 둘러보며 자리를 잡는 것과 같아요. 잠깐의 새로고침이면 충분해요.</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-rail"><div class="step-dot">5</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>실행하고 첫 인사 나누기</h3>
+          <p class="lede">다 됐어요! VS Code 안에서 Claude Code를 열고, 안내에 따라 로그인하면 끝입니다.</p>
+          <ol class="substep">
+            <li>VS Code 화면에서 Claude Code 패널을 열어요. (설치 후 보통 안내가 떠요)</li>
+            <li>로그인·인증 안내가 뜨면 화면 그대로 따라가요.</li>
+            <li>필요하면 확장 설정에서 <b>터미널 사용</b> 옵션을 켜요. 문서·영상에서 함께 쓰는 경우가 많아요.</li>
+          </ol>
+          <div class="step-tip sage"><span class="ti">🎉</span><span><b>입주 완료!</b> 이제 VS Code 안에서 언제든 AI 동료에게 일을 부탁할 수 있어요.</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ 비교표 ============ -->
+<section class="section intro">
+  <div class="wrap">
+    <span class="ghost-num">05</span>
+    <div class="reveal">
+      <span class="section-tag">05 · 한눈 비교</span>
+      <h2 class="section-title">그래서, 어떤 방법이<br />나한테 맞을까요?</h2>
+      <p class="section-lead">
+        정답은 없어요. 다만 처음 시작하는 비개발자라면 <b>VS Code 확장</b>이 부담이 적고,
+        자동화나 반복 작업까지 노린다면 <b>터미널 전역설치</b>가 더 든든해요.
+      </p>
+    </div>
+    <div class="compare-wrap reveal d1">
+      <table class="compare">
+        <thead>
+          <tr>
+            <th>비교 항목</th>
+            <th>① 터미널 전역설치</th>
+            <th>② VS Code 확장</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>추천 대상</td>
+            <td><span class="cell-emo">⚡</span>CLI에 익숙해지고 싶은 사람</td>
+            <td><span class="cell-emo">🌱</span>가장 쉽게 시작하고 싶은 사람</td>
+          </tr>
+          <tr>
+            <td>가장 큰 장점</td>
+            <td>어디서나 <b>claude</b> 한 마디로 호출</td>
+            <td>화면에서 버튼으로 바로 사용</td>
+          </tr>
+          <tr>
+            <td>먼저 필요한 것</td>
+            <td>Node.js · PowerShell · Git 권장</td>
+            <td>VS Code · 확장 설치</td>
+          </tr>
+          <tr>
+            <td>체감 난이도</td>
+            <td><span class="cell-emo">🟠</span>보통 — 명령어 붙여넣기</td>
+            <td><span class="cell-emo">🟢</span>쉬움 — 버튼 클릭 위주</td>
+          </tr>
+          <tr>
+            <td>이런 분께</td>
+            <td>"한 번 세팅하고 오래 쓸래요"</td>
+            <td>"일단 눈으로 보면서 익힐래요"</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 추천 순서 ============ -->
+<section class="section route" id="route">
+  <div class="wrap">
+    <span class="ghost-num">06</span>
+    <div class="reveal" style="margin-bottom:46px">
+      <span class="section-tag">06 · 안전한 순서</span>
+      <h2 class="section-title">초보자라면 이 순서대로,<br />하나씩 체크하며 가요</h2>
+      <p class="section-lead">
+        아래 항목을 누르면 체크가 돼요. 하나씩 끝낼 때마다 진행률이 차오르니,
+        지금 어디까지 왔는지 한눈에 보여요.
+      </p>
+    </div>
+    <div class="route-grid">
+      <div class="checklist reveal d1">
+        <div class="check-item" data-check>
+          <div class="check-box"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="ci-num">01</span>
+          <div>
+            <div class="ci-title">Node.js 설치하기</div>
+            <div class="ci-desc">공식 사이트에서 LTS 버전을 받아 기본값으로 설치해요.</div>
+          </div>
+        </div>
+        <div class="check-item" data-check>
+          <div class="check-box"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="ci-num">02</span>
+          <div>
+            <div class="ci-title">Git 설치하기</div>
+            <div class="ci-desc">설치 마법사는 거의 기본값(Next)으로 넘어가면 돼요.</div>
+          </div>
+        </div>
+        <div class="check-item" data-check>
+          <div class="check-box"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="ci-num">03</span>
+          <div>
+            <div class="ci-title"><code style="font-family:var(--font-mono);font-size:14px">node -v</code> · <code style="font-family:var(--font-mono);font-size:14px">npm -v</code> 로 확인</div>
+            <div class="ci-desc">버전 숫자가 보이면 준비물이 잘 들어온 거예요.</div>
+          </div>
+        </div>
+        <div class="check-item" data-check>
+          <div class="check-box"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="ci-num">04</span>
+          <div>
+            <div class="ci-title">설치 방법 고르고 진행하기</div>
+            <div class="ci-desc">터미널 전역설치 또는 VS Code 확장 — 둘 중 하나를 골라 설치해요.</div>
+          </div>
+        </div>
+        <div class="check-item" data-check>
+          <div class="check-box"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="ci-num">05</span>
+          <div>
+            <div class="ci-title">버전 확인 후 로그인하기</div>
+            <div class="ci-desc">설치를 확인하고, 안내에 따라 로그인하면 모든 준비 끝!</div>
+          </div>
+        </div>
+      </div>
+      <div class="route-prog reveal d2">
+        <div class="pct" id="progPct">0%</div>
+        <div class="plabel" id="progLabel">아직 시작 전이에요 — 천천히 가볼까요?</div>
+        <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+        <div class="done-msg" id="doneMsg">🎉 모든 단계 완료! Claude Code 입주를 축하해요.</div>
+        <div class="hint">체크는 이 브라우저에서만 기억돼요. 부담 없이 눌러보며 진행 상황을 확인하세요.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" id="faq">
+  <div class="wrap">
+    <span class="ghost-num">07</span>
+    <div class="reveal">
+      <span class="section-tag">07 · 자주 막히는 곳</span>
+      <h2 class="section-title">여기서 많이들 멈춰요 —<br />미리 알아두면 안 막혀요</h2>
+      <p class="section-lead">
+        설치하다 보면 누구나 한 번쯤 갸웃하게 되는 지점들이 있어요. 자주 나오는 질문만 모았어요.
+      </p>
+    </div>
+    <div class="faq-list">
+      <div class="faq reveal d1">
+        <div class="faq-q"><span class="qmark">Q</span> PowerShell, CMD, Git Bash… 뭐가 다른 거예요?<span class="qtoggle"></span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+          모두 "컴퓨터에게 명령을 입력하는 창"이에요. 같은 목적의 다른 창구라고 보면 돼요.
+          공식 문서 기준으로 <b>Windows에서는 PowerShell 설치 명령이 가장 단순</b>하고 안내도 가장 많아요.
+          그래서 이 가이드도 PowerShell을 기준으로 설명했어요. CMD로도 설치는 가능해요.
+        </div></div>
+      </div>
+      <div class="faq reveal d1">
+        <div class="faq-q"><span class="qmark">Q</span> <code>claude</code>를 쳤더니 "인식되지 않습니다"라고 나와요.<span class="qtoggle"></span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+          설치 직후 가장 흔한 상황이에요. 컴퓨터가 새로 들어온 명령어를 아직 모르는 상태거든요.
+          <b>PowerShell 창을 완전히 닫았다가 다시 열어보세요.</b> 대부분 이걸로 해결돼요.
+          그래도 안 되면 컴퓨터를 한 번 재시작한 뒤 다시 시도해 보세요.
+        </div></div>
+      </div>
+      <div class="faq reveal d1">
+        <div class="faq-q"><span class="qmark">Q</span> Node.js, 꼭 설치해야 하나요?<span class="qtoggle"></span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+          <b>터미널 전역설치 방식</b>은 Node.js라는 엔진 위에서 돌아가기 때문에 먼저 설치해두는 걸 권장해요.
+          요리로 치면 가스레인지 같은 존재라, 없으면 불을 못 켜는 셈이죠.
+          미리 깔아두면 설치 과정이 훨씬 매끄러워요.
+        </div></div>
+      </div>
+      <div class="faq reveal d1">
+        <div class="faq-q"><span class="qmark">Q</span> 윈도우 버전이 너무 낮으면 어떻게 하나요?<span class="qtoggle"></span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+          Claude Code는 <b>Windows 10 (버전 1809) 이상</b>을 기준으로 안내돼요.
+          그보다 낮다면, 윈도우 설정 → 업데이트에서 먼저 최신 상태로 올린 뒤 설치를 진행하세요.
+          현관문 규격이 맞아야 새 가구가 들어올 수 있는 것과 같아요.
+        </div></div>
+      </div>
+      <div class="faq reveal d1">
+        <div class="faq-q"><span class="qmark">Q</span> 두 방법을 다 설치해도 괜찮나요?<span class="qtoggle"></span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+          네, 괜찮아요. 다만 처음에는 <b>한 가지 방법으로 익숙해진 뒤</b> 필요해지면 다른 방법을 더해보는 걸 추천해요.
+          한꺼번에 두 길을 가면 어디서 막혔는지 헷갈리기 쉽거든요. 하나씩, 천천히가 정답이에요.
+        </div></div>
+      </div>
+      <div class="faq reveal d1">
+        <div class="faq-q"><span class="qmark">Q</span> 설치하다 처음 보는 영어 메시지가 떠요.<span class="qtoggle"></span></div>
+        <div class="faq-a"><div class="faq-a-inner">
+          당황하지 않아도 돼요. 설치 마법사의 메시지는 대부분 "다음으로 넘어갈까요?"를 묻는 거예요.
+          특별한 안내가 없다면 <b>Next(다음) → Install(설치) → Finish(완료)</b> 흐름으로 진행하면 됩니다.
+          정 모르겠는 메시지가 뜨면, 그 문장을 그대로 복사해 검색해 보는 것도 좋은 방법이에요.
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 마무리 CTA ============ -->
+<section class="section outro">
+  <div class="glow"></div>
+  <div class="wrap">
+    <div class="outro-inner">
+      <h2>이제 AI 동료와<br />첫 출근을 함께할 차례예요</h2>
+      <p>
+        설치는 시작일 뿐이에요. 처음엔 작은 심부름부터 — 파일 정리, 자료 변환 같은 것부터
+        부탁해 보세요. 익숙해질수록 맡길 수 있는 일이 점점 늘어날 거예요.
+      </p>
+      <a href="#top" class="btn btn-primary">처음으로 돌아가 다시 보기 <span class="arrow">↑</span></a>
+      <div class="outro-steps">
+        <span><i>01</i>준비물</span>
+        <span><i>02</i>방법 선택</span>
+        <span><i>03</i>설치</span>
+        <span><i>04</i>버전 확인</span>
+        <span><i>05</i>로그인</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 푸터 ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo">
+          <span class="nav-mark">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M7 8l-4 4 4 4M17 8l4 4-4 4M14 4l-4 16" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          Claude Code 설치집
+        </div>
+        <p>터미널이 처음인 분들을 위한 윈도우 설치 안내서. 어려운 말은 빼고, 일상의 비유로 한 단계씩 풀어 썼어요.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>가이드</h4>
+          <a href="#intro">이게 뭔가요</a>
+          <a href="#prep">준비물</a>
+          <a href="#fork">설치 방법</a>
+          <a href="#route">추천 순서</a>
+        </div>
+        <div class="footer-col">
+          <h4>도움말</h4>
+          <a href="#faq">자주 막히는 곳</a>
+          <a href="https://code.claude.com/docs" target="_blank" rel="noopener">공식 문서 ↗</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Claude Code 설치집 · 비개발자를 위한 친절한 안내서</span>
+      <span class="made">☁️ 뽀둥이가 정리했어요</span>
+    </div>
+  </div>
+</footer>
+
+<!-- 토스트 -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#7d9a5b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span id="toastMsg">복사됐어요!</span>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+
+  /* ---- 스크롤 진행바 + 네비 ---- */
+  var progress = document.getElementById("progress");
+  var nav = document.getElementById("nav");
+  function onScroll(){
+    var h = document.documentElement;
+    var scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+    progress.style.width = (scrolled*100) + "%";
+    nav.classList.toggle("scrolled", h.scrollTop > 30);
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  onScroll();
+
+  /* ---- reveal 애니메이션 ---- */
+  var reveals = document.querySelectorAll(".reveal");
+  if(reduce){
+    reveals.forEach(function(el){el.classList.add("in");});
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    }, {threshold:0.12, rootMargin:"0px 0px -8% 0px"});
+    reveals.forEach(function(el){ io.observe(el); });
+  }
+
+  /* ---- 토스트 ---- */
+  var toast = document.getElementById("toast");
+  var toastMsg = document.getElementById("toastMsg");
+  var toastTimer;
+  function showToast(msg){
+    toastMsg.textContent = msg;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove("show"); }, 2400);
+  }
+
+  /* ---- 코드 복사 ---- */
+  document.querySelectorAll(".copy-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var text = (btn.getAttribute("data-copy")||"").replace(/&#10;/g,"\n");
+      var done = function(){
+        btn.classList.add("done");
+        var label = btn.childNodes[btn.childNodes.length-1];
+        label.textContent = " 복사 완료";
+        showToast("명령어가 복사됐어요! 이제 붙여넣기만 하면 돼요.");
+        setTimeout(function(){
+          btn.classList.remove("done");
+          label.textContent = " 복사";
+        }, 2200);
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done).catch(function(){ fallback(text, done); });
+      } else { fallback(text, done); }
+    });
+  });
+  function fallback(text, cb){
+    var ta = document.createElement("textarea");
+    ta.value = text; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); cb(); }catch(e){}
+    document.body.removeChild(ta);
+  }
+
+  /* ---- 두 갈래 길: 카드 선택 + 탭 ---- */
+  var panels = document.querySelectorAll(".path-panel");
+  var tabs = document.querySelectorAll(".path-switch button");
+  var pickCards = document.querySelectorAll(".path-card");
+  function selectPath(name){
+    panels.forEach(function(p){ p.classList.toggle("show", p.getAttribute("data-panel")===name); });
+    tabs.forEach(function(t){ t.classList.toggle("on", t.getAttribute("data-tab")===name); });
+    pickCards.forEach(function(c){ c.classList.toggle("sel", c.getAttribute("data-pick")===name); });
+  }
+  tabs.forEach(function(t){
+    t.addEventListener("click", function(){ selectPath(t.getAttribute("data-tab")); });
+  });
+  pickCards.forEach(function(c){
+    function go(){
+      var name = c.getAttribute("data-pick");
+      selectPath(name);
+      var steps = document.getElementById("steps");
+      if(steps) steps.scrollIntoView({behavior: reduce ? "auto" : "smooth", block:"start"});
+    }
+    c.addEventListener("click", go);
+    c.addEventListener("keydown", function(e){
+      if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go(); }
+    });
+  });
+
+  /* ---- FAQ 아코디언 ---- */
+  document.querySelectorAll(".faq").forEach(function(faq){
+    var q = faq.querySelector(".faq-q");
+    var a = faq.querySelector(".faq-a");
+    q.addEventListener("click", function(){
+      var open = faq.classList.contains("open");
+      document.querySelectorAll(".faq").forEach(function(f){
+        f.classList.remove("open");
+        f.querySelector(".faq-a").style.maxHeight = null;
+      });
+      if(!open){
+        faq.classList.add("open");
+        a.style.maxHeight = a.scrollHeight + "px";
+      }
+    });
+  });
+
+  /* ---- 체크리스트 + 진행률 ---- */
+  var items = document.querySelectorAll(".check-item");
+  var fill = document.getElementById("progFill");
+  var pct = document.getElementById("progPct");
+  var label = document.getElementById("progLabel");
+  var doneMsg = document.getElementById("doneMsg");
+  var STORE = "ccguide-checks-v1";
+  var labels = [
+    "아직 시작 전이에요 — 천천히 가볼까요?",
+    "좋아요, 첫 발을 뗐어요!",
+    "절반까지 잘 오고 있어요 👍",
+    "거의 다 왔어요, 조금만 더!",
+    "마지막 한 단계만 남았어요!",
+    "완벽해요 — 모든 준비가 끝났어요 ✨"
+  ];
+  var saved = {};
+  try{ saved = JSON.parse(localStorage.getItem(STORE)||"{}"); }catch(e){}
+  function update(){
+    var total = items.length, count = 0;
+    items.forEach(function(it){ if(it.classList.contains("checked")) count++; });
+    var ratio = total ? count/total : 0;
+    fill.style.width = (ratio*100)+"%";
+    pct.textContent = Math.round(ratio*100)+"%";
+    label.textContent = labels[count] || labels[0];
+    doneMsg.classList.toggle("show", count===total);
+  }
+  items.forEach(function(it, i){
+    if(saved["c"+i]) it.classList.add("checked");
+    it.addEventListener("click", function(){
+      it.classList.toggle("checked");
+      saved["c"+i] = it.classList.contains("checked");
+      try{ localStorage.setItem(STORE, JSON.stringify(saved)); }catch(e){}
+      update();
+    });
+  });
+  update();
+
+  /* ---- 앵커 스무스 스크롤(헤더 보정) ---- */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener("click", function(e){
+      var id = a.getAttribute("href");
+      if(id.length<2) return;
+      var target = document.querySelector(id);
+      if(!target) return;
+      e.preventDefault();
+      var y = target.getBoundingClientRect().top + window.pageYOffset - 64;
+      window.scrollTo({top:y, behavior: reduce ? "auto" : "smooth"});
+    });
+  });
+})();
+</script>
+</body>
+</html>
